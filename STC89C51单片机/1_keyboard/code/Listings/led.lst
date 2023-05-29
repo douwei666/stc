@@ -1,0 +1,127 @@
+C51 COMPILER V9.01   LED                                                                   05/22/2023 10:42:27 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE LED
+OBJECT MODULE PLACED IN .\Objects\led.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE led.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\led.lst)
+                    - TABS(2) OBJECT(.\Objects\led.obj)
+
+line level    source
+
+   1          /*
+   2               端口操作来实现流水灯
+   3          第一步：定义端口
+   4          第二步：必须要懂得二进制转换为十六进制（采用八四二一法则）
+   5          第三步：写流水状态用二进制表示
+   6          第四步：将二进制状态转换为十六进制表示
+   7          第五步：基础代码流程
+   8          */
+   9          /*
+  10              第一步：看原理图 我们将LED灯接在P1端口上
+  11            所以我们定义端口为：#denfine led P1
+  12          */
+  13          
+  14          /*数组方法*/
+  15          #include "reg52.h"//51单片机的头文件
+  16          #include "intrins.h" 
+  17          
+  18          sbit key1 = P2^0;
+  19          sbit key2 = P2^2;
+  20          sbit key3 = P2^4;
+  21          
+  22          unsigned char led1[8] = {0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};//定义了8个灯的状态1
+  23          unsigned char led2[8] = {0x80,0x40,0x20,0x10,0x08,0x04,0x02,0x01};//定义了8个灯的状态2
+  24          unsigned char led3[4] = {0x80,0x40,0x20,0x10};//定义了8个灯的状态3
+  25          /*端口操作*/
+  26          
+  27          void delay_ms(int t)
+  28          {
+  29   1         int i = 0;
+  30   1         while(t--)
+  31   1         {
+  32   2            i =128;
+  33   2            while(i--)
+  34   2            {
+  35   3               _nop_();  /*用到__nop_() 用到intrins.h头文件*/
+  36   3            }
+  37   2         }
+  38   1      }
+  39          
+  40          unsigned char read_key(void)
+  41          {
+  42   1          static unsigned int num;
+  43   1          if(key1 == 0)
+  44   1          {
+  45   2             delay_ms(2);
+  46   2             if(key1 == 0)
+  47   2             {
+  48   3                num =1; 
+  49   3             }
+  50   2          }
+  51   1          if(key2 == 0)
+  52   1          {
+  53   2             delay_ms(2);
+  54   2             if(key2 == 0)
+C51 COMPILER V9.01   LED                                                                   05/22/2023 10:42:27 PAGE 2   
+
+  55   2             {
+  56   3                num =2; 
+  57   3             }
+  58   2          }
+  59   1          if(key3 == 0)
+  60   1          {
+  61   2             delay_ms(2);
+  62   2             if(key3 == 0)
+  63   2             {
+  64   3                num =3; 
+  65   3             }
+  66   2          }
+  67   1          return num;
+  68   1      }
+  69          void main(void)
+  70          {
+  71   1         int i = 0,value =0;
+  72   1         P1 = 0X00;
+  73   1         while(1)
+  74   1         {
+  75   2             value =read_key();
+  76   2             if(value == 1)
+  77   2             {
+  78   3                for(i = 0;i<8;i++)
+  79   3                {
+  80   4                    P1 = led1[i];
+  81   4                    delay_ms(500);
+  82   4                }
+  83   3             }
+  84   2             if(value == 2)
+  85   2             {
+  86   3                for(i = 0;i<8;i++)
+  87   3                {
+  88   4                    P1 = led2[i];
+  89   4                    delay_ms(500);
+  90   4                }
+  91   3             }
+  92   2             if(value == 3)
+  93   2             {
+  94   3                for(i = 0;i<4;i++)
+  95   3                {
+  96   4                    P1 = led3[i];
+  97   4                    delay_ms(500);
+  98   4                }
+  99   3             }
+ 100   2         }
+ 101   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    227    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     22       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
