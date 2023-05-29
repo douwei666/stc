@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "files.autoGuessEncoding": " true",
+        "intrins.h": "c"
+    }
+}
